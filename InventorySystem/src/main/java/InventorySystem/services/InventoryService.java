@@ -6,10 +6,13 @@ import InventorySystem.entity.Inventory;
 import InventorySystem.entity.InventoryId;
 import InventorySystem.entity.Product;
 import InventorySystem.entity.Warehouse;
+import InventorySystem.exceptions.BadRequestException;
+import InventorySystem.exceptions.ResourceNotFoundException;
 import InventorySystem.mapper.InventoryMapper;
 import InventorySystem.repositories.InventoryRepository;
 import InventorySystem.repositories.ProductRepository;
 import InventorySystem.repositories.WarehouseRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -27,22 +30,13 @@ public class InventoryService {
     @Autowired
     private WarehouseRepository warehouseRepository;
 
-    public InventoryService(InventoryRepository inventoryRepository
-                            ,InventoryMapper inventoryMapper
-                            ,ProductRepository productRepository
-                            ,WarehouseRepository warehouseRepository){
-        this.inventoryRepository = inventoryRepository;
-        this.inventoryMapper = inventoryMapper;
-        this.productRepository = productRepository;
-        this.warehouseRepository= warehouseRepository;
-    }
 
-
+    @Transactional
     public InventoryResponseDTO createInventory(InventoryRequestDTO dto){
         Product product = productRepository.findById(dto.getProductId())
-                .orElseThrow(()-> new RuntimeException("Product not founded"));
+                .orElseThrow(()-> new ResourceNotFoundException("Product not founded"));
         Warehouse warehouse = warehouseRepository.findById(dto.getWarehouseId())
-                .orElseThrow(()-> new RuntimeException("Warehouse not founded "));
+                .orElseThrow(()-> new ResourceNotFoundException("Warehouse not founded "));
 
         Inventory inventory = inventoryMapper.toEntity(dto,product,warehouse);
 
@@ -51,39 +45,47 @@ public class InventoryService {
         return inventoryMapper.toDTO(savedInventory);
     }
 
-    public InventoryResponseDTO updateInventory(InventoryRequestDTO dto){
-        InventoryId id = new InventoryId(dto.getProductId(), dto.getWarehouseId());
+    @Transactional
+    public InventoryResponseDTO updateInventory(Long productId, Long warehouseId, InventoryRequestDTO dto) {
+
+        InventoryId id = new InventoryId(productId, warehouseId);
 
         Inventory inventory = inventoryRepository.findById(id)
-                .orElseThrow(()-> new RuntimeException("Inventory not founded with given id"));
+                .orElseThrow(() -> new ResourceNotFoundException("Inventory not found"));
+
+        if (dto.getQuantity() < 0) {
+            throw new BadRequestException("Quantity cannot be negative");
+        }
 
         inventory.setQuantity(dto.getQuantity());
 
-        Inventory updatedInventory = inventoryRepository.save(inventory);
+        Inventory updated = inventoryRepository.save(inventory);
 
-        return inventoryMapper.toDTO(updatedInventory);
+        return inventoryMapper.toDTO(updated);
     }
 
-    public InventoryResponseDTO getInventoryById(InventoryRequestDTO dto){
-        Product product = productRepository.findById(dto.getProductId())
-                .orElseThrow(()-> new RuntimeException("product not founded"));
+    public InventoryResponseDTO getInventoryById(Long productId, Long warehouseId) {
 
-        Warehouse warehouse = warehouseRepository.findById(dto.getWarehouseId())
-                .orElseThrow(()-> new RuntimeException("Warehouse not founded"));
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
 
-        InventoryId id = new InventoryId(product.getId(),warehouse.getId());
+        Warehouse warehouse = warehouseRepository.findById(warehouseId)
+                .orElseThrow(() -> new ResourceNotFoundException("Warehouse not found"));
+
+        InventoryId id = new InventoryId(productId, warehouseId);
 
         Inventory inventory = inventoryRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Inventory does not exist"));
+                .orElseThrow(() -> new ResourceNotFoundException("Inventory does not exist"));
 
         return inventoryMapper.toDTO(inventory);
     }
 
+    @Transactional
     public void deleteInventory(Long productId,long warehouseId){
         InventoryId id = new InventoryId(productId,warehouseId);
 
         if(!inventoryRepository.existsById(id)){
-            throw new RuntimeException("Inventory not founded ");
+            throw new ResourceNotFoundException("Inventory not founded ");
         }
         inventoryRepository.deleteById(id);
     }
