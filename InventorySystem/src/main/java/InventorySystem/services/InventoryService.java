@@ -80,6 +80,15 @@ public class InventoryService {
         return inventoryMapper.toDTO(inventory);
     }
 
+    public List<InventoryResponseDTO> getAllInventory(){
+        List<Inventory> inventories= inventoryRepository.findAll();
+
+        return inventories
+                .stream()
+                .map(inventory -> inventoryMapper.toDTO(inventory))
+                .toList();
+    }
+
     @Transactional
     public void deleteInventory(Long productId,long warehouseId){
         InventoryId id = new InventoryId(productId,warehouseId);

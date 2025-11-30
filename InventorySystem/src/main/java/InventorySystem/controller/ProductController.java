@@ -19,7 +19,7 @@ public class ProductController {
         this.productService = productService;
     }
 
-    @GetMapping("/")
+    @GetMapping
     public ResponseEntity<List<ProductResponseDTO>> getAllProducts(){
         List<ProductResponseDTO> products = productService.getAllProducts();
 
@@ -34,6 +34,21 @@ public class ProductController {
 
         return ResponseEntity.ok(product);
     }
+
+    @GetMapping("/category/{category}")
+    public ResponseEntity<List<ProductResponseDTO>> getProductByCategory(
+            @PathVariable  String category){
+        List<ProductResponseDTO> products = productService.getProductsByCategory(category);
+
+        return ResponseEntity.ok(products);
+    }
+
+    @GetMapping("/expensive")
+    public ResponseEntity<List<ProductResponseDTO>> get3ExpensiveProducts(){
+        List<ProductResponseDTO> products = productService.getTop3ExpensiveProducts();
+        return ResponseEntity.ok(products);
+    }
+
 
     @PostMapping("/")
     public ResponseEntity<ProductResponseDTO> addProduct(

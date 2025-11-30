@@ -18,7 +18,7 @@ public class WarehouseController {
         this.warehouseService = warehouseService;
     }
 
-    @GetMapping("/")
+    @GetMapping
     public ResponseEntity<List<WarehouseResponseDTO>> getAllWarehouse() {
         List<WarehouseResponseDTO> warehouses = warehouseService.getAllWarehouse();
         return ResponseEntity.ok(warehouses);
@@ -31,7 +31,7 @@ public class WarehouseController {
         return ResponseEntity.ok(warehouse);
     }
 
-    @PostMapping("/")
+    @PostMapping
     public ResponseEntity<WarehouseResponseDTO> addWarehouse(
             @Valid @RequestBody WarehouseRequestDTO dto
             ){

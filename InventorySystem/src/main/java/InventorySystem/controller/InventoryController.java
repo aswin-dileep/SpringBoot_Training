@@ -7,8 +7,10 @@ import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
-@RequestMapping("/Inventory")
+@RequestMapping("/inventory")
 public class InventoryController {
 
     private final InventoryService inventoryService;
@@ -17,7 +19,12 @@ public class InventoryController {
         this.inventoryService = inventoryService;
     }
 
-    @PostMapping("/")
+    @GetMapping
+    public ResponseEntity<List<InventoryResponseDTO>> getAllInventory(){
+        List<InventoryResponseDTO> inventories= inventoryService.getAllInventory();
+        return ResponseEntity.ok(inventories);
+    }
+    @PostMapping
     public ResponseEntity<InventoryResponseDTO> createInventory(
             @Valid @RequestBody InventoryRequestDTO dto){
         InventoryResponseDTO response = inventoryService.createInventory(dto);
@@ -35,14 +42,20 @@ public class InventoryController {
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/{productId}/{warehouseId}")
+    @GetMapping("/productQuantity/{id}")
+    public ResponseEntity<Integer> totalProductQuantity(
+            @PathVariable Long id){
+        int qty = inventoryService.totalProductQuantity(id);
+        return ResponseEntity.ok(qty);
+    }
+
+    @PutMapping("/{productId}/{warehouseId}")
     public ResponseEntity<InventoryResponseDTO> updateInventory(
             @PathVariable Long productId,
             @PathVariable Long warehouseId,
             @Valid @RequestBody InventoryRequestDTO dto) {
 
-        InventoryResponseDTO response =
-                inventoryService.updateInventory(productId, warehouseId, dto);
+        InventoryResponseDTO response = inventoryService.updateInventory(productId, warehouseId, dto);
 
         return ResponseEntity.ok(response);
     }

@@ -10,6 +10,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -33,6 +34,27 @@ public class ProductService {
         Product product = productRepository.findById(id)
                 .orElseThrow(()-> new ResourceNotFoundException("Product not found with id: " + id));
         return productMapper.toDTO(product);
+    }
+
+    public List<ProductResponseDTO> getProductsByCategory(String category){
+        List<Product> products = productRepository.findAll();
+
+        return products
+                .stream()
+                .filter(product -> product.getCategory().equals(category))
+                .map(product -> productMapper.toDTO(product))
+                .toList();
+    }
+
+    public List<ProductResponseDTO> getTop3ExpensiveProducts(){
+        List<Product> products = productRepository.findAll();
+
+        return products
+                .stream()
+                .sorted(Comparator.comparing(Product::getPrice).reversed())
+                .limit(3)
+                .map(productMapper::toDTO)
+                .toList();
     }
 
     @Transactional
