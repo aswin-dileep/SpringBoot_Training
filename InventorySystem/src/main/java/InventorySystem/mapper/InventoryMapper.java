@@ -14,12 +14,19 @@ public class InventoryMapper {
     public Inventory toEntity(InventoryRequestDTO dto, Product product, Warehouse warehouse){
         InventoryId id = new InventoryId(dto.getProductId(),dto.getWarehouseId());
 
-        Inventory inventory = new Inventory();
-        inventory.setId(id);
-        inventory.setProduct(product);
-        inventory.setWarehouse(warehouse);
-        inventory.setQuantity(dto.getQuantity());
-        return inventory;
+//        Inventory inventory = new Inventory();
+//        inventory.setId(id);
+//        inventory.setProduct(product);
+//        inventory.setWarehouse(warehouse);
+//        inventory.setQuantity(dto.getQuantity());
+//        return inventory;
+        return Inventory
+                .builder()
+                .id(id)
+                .product(product)
+                .warehouse(warehouse)
+                .quantity(dto.getQuantity())
+                .build();
     }
 
     public InventoryResponseDTO toDTO(Inventory inventory){

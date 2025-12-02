@@ -22,6 +22,7 @@ public class InventoryController {
     @GetMapping
     public ResponseEntity<List<InventoryResponseDTO>> getAllInventory(){
         List<InventoryResponseDTO> inventories= inventoryService.getAllInventory();
+
         return ResponseEntity.ok(inventories);
     }
     @PostMapping

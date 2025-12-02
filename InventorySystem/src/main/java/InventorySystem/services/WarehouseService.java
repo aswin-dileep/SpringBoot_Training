@@ -7,20 +7,19 @@ import InventorySystem.exceptions.ResourceNotFoundException;
 import InventorySystem.mapper.WarehouseMapper;
 import InventorySystem.repositories.WarehouseRepository;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-
+@RequiredArgsConstructor
 @Service
-@Slf4j
 public class WarehouseService {
 
-    @Autowired
-    private WarehouseRepository warehouseRepository;
-    @Autowired
-    private WarehouseMapper warehouseMapper;
+
+    private final WarehouseRepository warehouseRepository;
+    private final WarehouseMapper warehouseMapper;
 
     @Transactional
     public WarehouseResponseDTO createWarehouse(WarehouseRequestDTO dto){

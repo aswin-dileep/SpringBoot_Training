@@ -7,28 +7,30 @@ import InventorySystem.entity.InventoryId;
 import InventorySystem.entity.Product;
 import InventorySystem.entity.Warehouse;
 import InventorySystem.exceptions.BadRequestException;
+import InventorySystem.exceptions.InventoryAlreadyExistsException;
 import InventorySystem.exceptions.ResourceNotFoundException;
 import InventorySystem.mapper.InventoryMapper;
 import InventorySystem.repositories.InventoryRepository;
 import InventorySystem.repositories.ProductRepository;
 import InventorySystem.repositories.WarehouseRepository;
 import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@RequiredArgsConstructor
 @Service
 public class InventoryService {
 
-    @Autowired
-    private InventoryRepository inventoryRepository;
-    @Autowired
-    private InventoryMapper inventoryMapper;
-    @Autowired
-    private ProductRepository productRepository;
-    @Autowired
-    private WarehouseRepository warehouseRepository;
+
+    private final InventoryRepository inventoryRepository;
+
+    private final InventoryMapper inventoryMapper;
+
+    private final ProductRepository productRepository;
+
+    private final WarehouseRepository warehouseRepository;
 
 
     @Transactional
@@ -37,6 +39,12 @@ public class InventoryService {
                 .orElseThrow(()-> new ResourceNotFoundException("Product not founded"));
         Warehouse warehouse = warehouseRepository.findById(dto.getWarehouseId())
                 .orElseThrow(()-> new ResourceNotFoundException("Warehouse not founded "));
+
+        InventoryId id = new InventoryId(product.getId(), warehouse.getId());
+
+        if(inventoryRepository.existsById(id)){
+            throw new InventoryAlreadyExistsException("Inventory with product id "+product.getId()+" and warehouse id "+warehouse.getId()+" Already Exist");
+        }
 
         Inventory inventory = inventoryMapper.toEntity(dto,product,warehouse);
 

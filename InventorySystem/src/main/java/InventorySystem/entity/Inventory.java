@@ -4,6 +4,7 @@ package InventorySystem.entity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -11,12 +12,12 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @Table(name = "product_warehouse")
 public class Inventory {
 
     @EmbeddedId
     private InventoryId id;
-
 
     @MapsId("productId")
     @ManyToOne

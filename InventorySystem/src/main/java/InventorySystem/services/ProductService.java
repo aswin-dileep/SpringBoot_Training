@@ -7,25 +7,22 @@ import InventorySystem.exceptions.ResourceNotFoundException;
 import InventorySystem.mapper.ProductMapper;
 import InventorySystem.repositories.ProductRepository;
 import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
 import java.util.Comparator;
 import java.util.List;
-
+@RequiredArgsConstructor
 @Service
+
 public class ProductService {
 
-    @Autowired
-    private ProductRepository productRepository;
-
-    @Autowired
-    private ProductMapper productMapper;
+    private final ProductRepository productRepository;
+    private final ProductMapper productMapper;
 
     @Transactional
     public ProductResponseDTO createProduct(ProductRequestDTO dto){
-        Product product =productMapper.toEntity(dto);
 
+        Product product =productMapper.toEntity(dto);
         Product savedProduct = productRepository.save(product);
         return productMapper.toDTO(savedProduct);
     }
@@ -37,11 +34,11 @@ public class ProductService {
     }
 
     public List<ProductResponseDTO> getProductsByCategory(String category){
-        List<Product> products = productRepository.findAll();
+
+        List<Product> products = productRepository.findByCategory(category) ;
 
         return products
                 .stream()
-                .filter(product -> product.getCategory().equals(category))
                 .map(product -> productMapper.toDTO(product))
                 .toList();
     }
@@ -81,6 +78,7 @@ public class ProductService {
 
     public  List<ProductResponseDTO> getAllProducts(){
         List<Product> products = productRepository.findAll();
+
         return products
                 .stream()
                 .map(product -> productMapper.toDTO(product))

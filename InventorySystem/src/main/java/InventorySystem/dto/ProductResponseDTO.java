@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Data
 @Builder
 @AllArgsConstructor
@@ -15,4 +17,6 @@ public class ProductResponseDTO {
     private String name;
     private String category;
     private Double price;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 }

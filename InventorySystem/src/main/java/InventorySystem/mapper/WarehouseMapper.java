@@ -9,11 +9,16 @@ import org.springframework.stereotype.Component;
 @Component
 public class WarehouseMapper {
     public Warehouse toEntity(WarehouseRequestDTO dto){
-        Warehouse warehouse = new Warehouse();
-        warehouse.setName(dto.getName());
-        warehouse.setLocation(dto.getLocation());
-
-        return warehouse;
+//        Warehouse warehouse = new Warehouse();
+//        warehouse.setName(dto.getName());
+//        warehouse.setLocation(dto.getLocation());
+//
+//        return warehouse;
+        return Warehouse
+                .builder()
+                .name(dto.getName())
+                .location(dto.getLocation())
+                .build();
     }
 
     public WarehouseResponseDTO toDTO(Warehouse warehouse){
@@ -25,9 +30,6 @@ public class WarehouseMapper {
                 .build();
     }
 
-    public void updateEntity(WarehouseRequestDTO dto,Warehouse warehouse){
-        warehouse.setName(dto.getName());
-        warehouse.setLocation(dto.getLocation());
-    }
+
 
 }

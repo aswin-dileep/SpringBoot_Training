@@ -8,12 +8,19 @@ import org.springframework.stereotype.Component;
 @Component
 public class ProductMapper {
     public Product toEntity(ProductRequestDTO dto){
-        Product product = new Product();
-        product.setName(dto.getName());
-        product.setCategory(dto.getCategory());
-        product.setPrice(dto.getPrice());
 
-        return product;
+
+//        Product product = new Product();
+//        product.setName(dto.getName());
+//        product.setCategory(dto.getCategory());
+//        product.setPrice(dto.getPrice());
+//
+//        return product;
+          return Product.builder()
+                  .name(dto.getName())
+                  .category(dto.getCategory())
+                  .price(dto.getPrice())
+                  .build();
     }
 
     public ProductResponseDTO toDTO(Product product){
@@ -24,13 +31,10 @@ public class ProductMapper {
                 .name(product.getName())
                 .category(product.getCategory())
                 .price(product.getPrice())
+                .createdAt(product.getCreatedAt())
+                .updatedAt(product.getUpdatedAt())
                 .build();
     }
 
-    public void updateEntity(ProductRequestDTO dto,Product product){
 
-        product.setName(dto.getName());
-        product.setPrice(dto.getPrice());
-        product.setCategory(dto.getCategory());
-    }
 }
